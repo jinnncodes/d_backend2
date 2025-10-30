@@ -8,19 +8,21 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Register a new user
+    // Register
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|string|email|unique:users,email',
+            'password'  => 'required|string|min:6|confirmed',
+            'role'      => 'required|string'
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'password'  => Hash::make($request->password),
+            'role'      => $request->role,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -32,7 +34,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // Login existing user
+    // Login 
     public function login(Request $request)
     {
         $request->validate([
@@ -56,7 +58,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // Logout current session
+    // Logout
     public function logout(Request $request)
     {
         /** @var \Laravel\Sanctum\PersonalAccessToken $token */
@@ -65,11 +67,5 @@ class AuthController extends Controller
         $token->delete();
 
         return response()->json(['message' => 'Logged out successfully.']);
-    }
-
-    // Get current authenticated user
-    public function me(Request $request)
-    {
-        return response()->json($request->user());
     }
 }
